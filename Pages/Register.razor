@@ -1,0 +1,230 @@
+﻿@page "/register/{EventId:int}"
+@using EventManagerPK.Models
+@using EventManagerPK.Services
+@inject IEventService EventService
+@inject NavigationManager Navigation
+@using System.ComponentModel.DataAnnotations
+
+<PageTitle>Register for Event</PageTitle>
+
+<div class="container mt-5">
+    <h3>Register for @Event?.Title</h3>
+
+    @if (Event == null)
+    {
+        <p>Loading...</p>
+    }
+    else
+    {
+        <div class="row">
+            <div class="col-md-6">
+                <img src="@Event.ImageUrl" alt="@Event.Title" class="img-fluid mb-3" />
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Event Details</h5>
+                        <p><strong>Price:</strong> @Event.Price.ToString("C")</p>
+                        <p><strong>Date:</strong> @Event.Date.ToString("D")</p>
+                        <p><strong>Location:</strong> @Event.Location</p>
+                        <p><strong>Available Tickets:</strong> @Event.AvailableTickets</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                @if (registrationSuccess)
+                {
+                    <div class="alert alert-success">
+                        <h4>Registration Successful!</h4>
+                        <p>Thank you for registering. Further information regarding payment has been sent to your email: @registrationModel.Email</p>
+                        <button class="btn btn-outline-primary mt-3" @onclick="NavigateToEvents">
+                            Browse More Events
+                        </button>
+                    </div>
+                }
+                else
+                {
+                    <EditForm Model="registrationModel" OnValidSubmit="HandleValidSubmit" class="card">
+                        <div class="card-body">
+                            <h5 class="card-title mb-4">Registration Form</h5>
+                            <DataAnnotationsValidator />
+                            <ValidationSummary class="text-danger mb-4" />
+
+                            <div class="mb-3">
+                                <label for="name" class="form-label">Full Name <span class="text-danger">*</span></label>
+                                <InputText id="name" class="form-control" @bind-Value="registrationModel.Name" />
+                                <ValidationMessage For="@(() => registrationModel.Name)" class="text-danger" />
+                                <small class="form-text text-muted">Please enter your full name as it appears on your ID.</small>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="email" class="form-label">Email Address <span class="text-danger">*</span></label>
+                                <InputText id="email" type="email" class="form-control" @bind-Value="registrationModel.Email" />
+                                <ValidationMessage For="@(() => registrationModel.Email)" class="text-danger" />
+                                <small class="form-text text-muted">We'll send the ticket and payment details to this email.</small>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="phone" class="form-label">Phone Number <span class="text-danger">*</span></label>
+                                <InputText id="phone" class="form-control" @bind-Value="registrationModel.PhoneNumber" />
+                                <ValidationMessage For="@(() => registrationModel.PhoneNumber)" class="text-danger" />
+                                <small class="form-text text-muted">Format: +XX XXX XXX XXX or (XXX) XXX-XXXX</small>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="address" class="form-label">Address <span class="text-danger">*</span></label>
+                                <InputTextArea id="address" class="form-control" @bind-Value="registrationModel.Address" rows="2" />
+                                <ValidationMessage For="@(() => registrationModel.Address)" class="text-danger" />
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="city" class="form-label">City <span class="text-danger">*</span></label>
+                                <InputText id="city" class="form-control" @bind-Value="registrationModel.City" />
+                                <ValidationMessage For="@(() => registrationModel.City)" class="text-danger" />
+                            </div>
+
+                            <div class="row mb-3">
+                                <div class="col">
+                                    <label for="zipCode" class="form-label">Zip/Postal Code <span class="text-danger">*</span></label>
+                                    <InputText id="zipCode" class="form-control" @bind-Value="registrationModel.ZipCode" />
+                                    <ValidationMessage For="@(() => registrationModel.ZipCode)" class="text-danger" />
+                                </div>
+                                <div class="col">
+                                    <label for="country" class="form-label">Country <span class="text-danger">*</span></label>
+                                    <InputSelect id="country" class="form-select" @bind-Value="registrationModel.Country">
+                                        <option value="">-- Select Country --</option>
+                                        <option value="USA">United States</option>
+                                        <option value="CAN">Canada</option>
+                                        <option value="UK">United Kingdom</option>
+                                        <option value="POL">Poland</option>
+                                        <option value="GER">Germany</option>
+                                        <option value="FRA">France</option>
+                                        <!-- Dodaj więcej krajów według potrzeb -->
+                                    </InputSelect>
+                                    <ValidationMessage For="@(() => registrationModel.Country)" class="text-danger" />
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="comments" class="form-label">Special Requirements</label>
+                                <InputTextArea id="comments" class="form-control" @bind-Value="registrationModel.Comments" rows="3" />
+                                <ValidationMessage For="@(() => registrationModel.Comments)" class="text-danger" />
+                                <small class="form-text text-muted">Please let us know if you have any special requirements or requests.</small>
+                            </div>
+
+                            <div class="mb-3 form-check">
+                                <InputCheckbox id="agreeTerms" class="form-check-input" @bind-Value="registrationModel.AgreeToTerms" />
+                                <label class="form-check-label" for="agreeTerms">
+                                    I agree to the <a href="#" @onclick:preventDefault>terms and conditions</a> <span class="text-danger">*</span>
+                                </label>
+                                <div>
+                                    <ValidationMessage For="@(() => registrationModel.AgreeToTerms)" class="text-danger" />
+                                </div>
+                            </div>
+
+                            <div class="d-grid gap-2">
+                                <button type="submit" class="btn btn-primary btn-lg">
+                                    Register for @Event.Price.ToString("C")
+                                </button>
+                                <button type="button" class="btn btn-outline-secondary" @onclick="NavigateToEvents">
+                                    Cancel
+                                </button>
+                            </div>
+                        </div>
+                    </EditForm>
+                }
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter]
+    public int EventId { get; set; }
+
+    private Event? Event { get; set; }
+    private RegistrationModel registrationModel = new();
+    private bool registrationSuccess = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        Event = await EventService.GetEventByIdAsync(EventId);
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        if (Event != null && Event.AvailableTickets > 0)
+        {
+            // Zmniejsz ilość dostępnych miejsc
+            Event.AvailableTickets--;
+
+            // Zaktualizuj wydarzenie w serwisie
+            await EventService.UpdateEventAsync(Event);
+
+            // Dodaj uczestnika
+            var attendee = new Attendee
+                {
+                    EventId = Event.Id,
+                    Name = registrationModel.Name,
+                    Email = registrationModel.Email,
+                    PhoneNumber = registrationModel.PhoneNumber,
+                    Address = registrationModel.Address,
+                    City = registrationModel.City,
+                    ZipCode = registrationModel.ZipCode,
+                    Country = registrationModel.Country,
+                    Comments = registrationModel.Comments
+                };
+            await EventService.AddAttendeeAsync(attendee);
+
+            // Pokaż wiadomość o powodzeniu rejestracji
+            registrationSuccess = true;
+
+            // Wyślij wiadomość e-mail z dalszymi informacjami (symulacja)
+            // W rzeczywistej aplikacji, tutaj można wywołać serwis e-mail
+            Console.WriteLine($"Email sent to {registrationModel.Email} with payment details for {Event.Title}.");
+        }
+    }
+
+    private void NavigateToEvents()
+    {
+        Navigation.NavigateTo("/events");
+    }
+
+    private class RegistrationModel
+    {
+        [Required(ErrorMessage = "Full name is required")]
+        [StringLength(100, MinimumLength = 3, ErrorMessage = "Name must be between 3 and 100 characters")]
+        [RegularExpression(@"^[a-zA-Z\s\-']+$", ErrorMessage = "Name can only contain letters, spaces, hyphens and apostrophes")]
+        public string Name { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Email address is required")]
+        [EmailAddress(ErrorMessage = "Please enter a valid email address")]
+        [RegularExpression(@"^[^@\s]+@[^@\s]+\.[^@\s]+$", ErrorMessage = "Please enter a valid email address")]
+        public string Email { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Phone number is required")]
+        [Phone(ErrorMessage = "Please enter a valid phone number")]
+        [RegularExpression(@"^\+?[0-9\s\-\(\)]{8,20}$", ErrorMessage = "Please enter a valid phone number")]
+        public string PhoneNumber { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Address is required")]
+        [StringLength(200, MinimumLength = 5, ErrorMessage = "Address must be between 5 and 200 characters")]
+        public string Address { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "City is required")]
+        [StringLength(100, MinimumLength = 2, ErrorMessage = "City must be between 2 and 100 characters")]
+        public string City { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Zip/Postal code is required")]
+        [RegularExpression(@"^[a-zA-Z0-9\s\-]{2,10}$", ErrorMessage = "Please enter a valid zip/postal code")]
+        public string ZipCode { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Country is required")]
+        public string Country { get; set; } = string.Empty;
+
+        [StringLength(500, ErrorMessage = "Comments cannot exceed 500 characters")]
+        public string Comments { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "You must agree to the terms and conditions")]
+        [Range(typeof(bool), "true", "true", ErrorMessage = "You must agree to the terms and conditions")]
+        public bool AgreeToTerms { get; set; } = false;
+    }
+}

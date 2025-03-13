@@ -1,0 +1,18 @@
+﻿.event-card {
+    transition: transform 0.2s;
+    max-width: 350px;
+}
+
+.event-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.placeholder-img {
+    height: 180px;
+}
+
+.card-img-top img {
+    height: 180px;
+    object-fit: cover;
+}

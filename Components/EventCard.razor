@@ -1,0 +1,67 @@
+﻿@using EventManagerPK.Models
+@using EventManagerPK.Services
+@inject NavigationManager Navigation
+
+<div class="card event-card mb-3">
+    <div class="card-img-top position-relative">
+        @if (!string.IsNullOrEmpty(Event.ImageUrl))
+        {
+            <img src="@Event.ImageUrl" alt="@Event.Title" class="img-fluid">
+        }
+        else
+        {
+            <div class="placeholder-img d-flex align-items-center justify-content-center bg-light">
+                <span class="text-muted">No image available</span>
+            </div>
+        }
+
+        @if (Event.IsFeatured)
+        {
+            <span class="badge bg-warning position-absolute top-0 end-0 m-2">Featured</span>
+        }
+
+        <div class="date-badge position-absolute top-0 start-0 m-2 bg-primary text-white p-2 rounded">
+            @Event.Date.ToString("MMM dd")
+        </div>
+    </div>
+
+    <div class="card-body">
+        <h5 class="card-title">@Event.Title</h5>
+        <p class="card-text text-truncate">@Event.Description</p>
+
+        <div class="d-flex justify-content-between align-items-center mt-2">
+            <div>
+                <i class="bi bi-geo-alt"></i> @Event.Location
+            </div>
+            <div class="text-primary fw-bold">
+                @(Event.Price > 0 ? $"${Event.Price:F2}" : "Free")
+            </div>
+        </div>
+
+        <div class="d-flex justify-content-between align-items-center mt-2">
+            <div class="badge bg-secondary">@Event.Category</div>
+            <div class="text-muted small">@(Event.AvailableTickets > 0 ? $"{Event.AvailableTickets} tickets left" : "Sold out")</div>
+        </div>
+    </div>
+
+    <div class="card-footer d-flex justify-content-between">
+        <small class="text-muted">By @Event.Organizer</small>
+        <div>
+            <RegisterButton Event="Event" />
+            <button class="btn btn-sm btn-outline-secondary" @onclick="OnViewDetails">Details</button>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public Event Event { get; set; } = new Event();
+
+    [Parameter]
+    public EventCallback<int> OnEventSelected { get; set; }
+
+    private async Task OnViewDetails()
+    {
+        await OnEventSelected.InvokeAsync(Event.Id);
+    }
+}

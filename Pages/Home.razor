@@ -1,0 +1,126 @@
+﻿@page "/"
+@using EventManagerPK.Models
+@using EventManagerPK.Components
+@using EventManagerPK.Services
+@inject NavigationManager NavigationManager
+@inject IEventService EventService
+
+<PageTitle>EventEasePK - Find and Book Events</PageTitle>
+
+<div class="hero-section">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-6">
+                <h1 class="display-4 fw-bold">Find the perfect events near you</h1>
+                <p class="lead my-4">Discover conferences, workshops, concerts and more events in your area. Book tickets easily with EventEasePK.</p>
+                <div class="d-grid gap-2 d-md-flex justify-content-md-start">
+                    <button class="btn btn-primary btn-lg px-4 me-md-2" @onclick="@(() => NavigationManager.NavigateTo("/events"))">Browse Events</button>
+                    <button class="btn btn-outline-secondary btn-lg px-4" @onclick="@(() => NavigationManager.NavigateTo("/about"))">Learn More</button>
+                </div>
+            </div>
+            <div class="col-md-6 d-none d-md-block">
+                <img src="images/hero-image.png" alt="Event illustration" class="img-fluid rounded shadow-lg">
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container my-5">
+    @if (featuredEvents.Any())
+    {
+        <div class="section-header mb-4">
+            <h2>Featured Events</h2>
+            <a href="/events" class="btn btn-link">View all events</a>
+        </div>
+        
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+            @foreach (var eventItem in featuredEvents)
+            {
+                <div class="col">
+                    <EventCard Event="eventItem" OnEventSelected="NavigateToEventDetails" />
+                </div>
+            }
+        </div>
+    }
+</div>
+
+<div class="bg-light py-5 my-5">
+    <div class="container">
+        <h2 class="text-center mb-4">Explore Events by Category</h2>
+        <div class="row g-4 justify-content-center">
+            @foreach (var category in categories)
+            {
+                <div class="col-6 col-md-4 col-lg-2">
+                    <div class="category-card text-center p-3" @onclick="@(() => NavigateToCategory(category))">
+                        <div class="category-icon mb-3">
+                            <i class="@GetCategoryIcon(category) fs-1"></i>
+                        </div>
+                        <h5>@category</h5>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<div class="container my-5">
+    <div class="row g-4 text-center">
+        <div class="col-md-4">
+            <div class="stats-card p-4 rounded shadow-sm">
+                <h3 class="display-4">500+</h3>
+                <p class="lead">Events</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="stats-card p-4 rounded shadow-sm">
+                <h3 class="display-4">5k+</h3>
+                <p class="lead">Happy Attendees</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="stats-card p-4 rounded shadow-sm">
+                <h3 class="display-4">20+</h3>
+                <p class="lead">Cities</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private List<Event> featuredEvents = new();
+    private List<EventCategory> categories = new();
+
+    protected override void OnInitialized()
+    {
+        // In a real application, you would get this data from a service
+        featuredEvents = EventService.GetFeaturedEventsAsync().Result;
+
+        categories = Enum.GetValues(typeof(EventCategory)).Cast<EventCategory>().ToList();
+    }
+
+    private void NavigateToEventDetails(int eventId)
+    {
+        // Navigate to event details page
+        NavigationManager.NavigateTo($"/events/{eventId}");
+    }
+
+    private void NavigateToCategory(EventCategory category)
+    {
+        // Navigate to events page with category filter
+        NavigationManager.NavigateTo($"/events/{category}");
+    }
+
+    private string GetCategoryIcon(EventCategory category)
+    {
+        return category switch
+        {
+            EventCategory.Conference => "bi bi-people",
+            EventCategory.Workshop => "bi bi-tools",
+            EventCategory.Concert => "bi bi-music-note-beamed",
+            EventCategory.Exhibition => "bi bi-easel",
+            EventCategory.Sports => "bi bi-dribbble",
+            EventCategory.Networking => "bi bi-briefcase",
+            _ => "bi bi-calendar-event"
+        };
+    }
+}

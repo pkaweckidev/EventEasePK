@@ -1,0 +1,16 @@
+﻿@using EventManagerPK.Models
+@inject NavigationManager Navigation
+
+<button class="btn btn-primary" @onclick="RegisterForEvent" disabled="@(Event.AvailableTickets <= 0)">
+    <i class="bi bi-pencil-square"></i> Register
+</button>
+
+@code {
+    [Parameter]
+    public Event Event { get; set; } = new Event();
+
+    private void RegisterForEvent()
+    {
+        Navigation.NavigateTo($"/register/{Event.Id}");
+    }
+}

@@ -1,0 +1,94 @@
+﻿@page "/events/{eventId:int}"
+@using EventManagerPK.Models
+@using EventManagerPK.Services
+@inject NavigationManager Navigation
+@inject IEventService EventService
+@inject ICartService CartService
+
+<div class="event-details-container">
+    @if (eventDetails != null)
+    {
+        <div class="event-card">
+            <div class="event-image-container">
+                <img src="@eventDetails.ImageUrl" alt="@eventDetails.Title">
+            </div>
+            <div class="event-info">
+                <h2 class="event-title">@eventDetails.Title</h2>
+
+                <div class="event-meta">
+                    <div class="meta-item">
+                        <i class="bi bi-calendar"></i>
+                        <span>@eventDetails.Date.ToString("f")</span>
+                    </div>
+                    <div class="meta-item">
+                        <i class="bi bi-geo-alt"></i>
+                        <span>@eventDetails.Location</span>
+                    </div>
+                    <div class="meta-item">
+                        <i class="bi bi-person"></i>
+                        <span>@eventDetails.Organizer</span>
+                    </div>
+                </div>
+
+                <div class="event-description">
+                    <p>@eventDetails.Description</p>
+                </div>
+
+                <div class="event-details-grid">
+                    <div class="detail-item">
+                        <div class="detail-label">Price</div>
+                        <div class="detail-value">@eventDetails.Price.ToString("C")</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Available Tickets</div>
+                        <div class="detail-value">@eventDetails.AvailableTickets</div>
+                    </div>
+                </div>
+
+                <div class="action-buttons">
+                    <button class="btn btn-primary" @onclick="RegisterForEvent" disabled="@(eventDetails.AvailableTickets <= 0)">
+                        <i class="bi bi-pencil-square me-2"></i>Register
+                    </button>
+                    <button class="btn btn-outline-secondary" @onclick="NavigateToEvents">Back to Events</button>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="loading-container">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            <p>Loading event details...</p>
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter]
+    public int EventId { get; set; }
+
+    private Event eventDetails;
+    private bool showActionMessage = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        eventDetails = await EventService.GetEventByIdAsync(EventId);
+    }
+
+    private void NavigateToEvents()
+    {
+        Navigation.NavigateTo("/events");
+    }
+
+    private void CloseAlert()
+    {
+        showActionMessage = false;
+    }
+
+    private void RegisterForEvent()
+    {
+        Navigation.NavigateTo($"/register/{EventId}");
+    }
+}

@@ -1,0 +1,109 @@
+﻿@page "/events"
+@page "/events/{category}"
+@using EventManagerPK.Models
+@using EventManagerPK.Components
+@using EventManagerPK.Services
+@inject NavigationManager Navigation
+@inject IEventService EventService
+
+
+<h2 class="mb-4">Upcoming Events</h2>
+
+<div class="row mb-4">
+    <div class="col">
+        <div class="input-group">
+            <input type="text" class="form-control" placeholder="Search events..."
+                   @bind-value="searchTerm" @bind-value:event="oninput" />
+            <button class="btn btn-outline-primary" type="button">Search</button>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <select class="form-select" value="@selectedCategory" @onchange="CategoryChanged">
+            <option value="">All Categories</option>
+            @foreach (var category in Enum.GetValues(typeof(EventCategory)))
+            {
+                <option value="@category">@category</option>
+            }
+        </select>
+    </div>
+</div>
+
+@if (filteredEvents.Any())
+{
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+        @foreach (var eventItem in filteredEvents)
+        {
+            <div class="col">
+                <EventCard Event="eventItem" OnEventSelected="NavigateToEventDetails" />
+            </div>
+        }
+    </div>
+}
+else
+{
+    <div class="alert alert-info">
+        No events found matching your criteria.
+    </div>
+}
+
+@code {
+    [Parameter]
+    public string Category { get; set; }
+    private List<Event> events = new();
+    private string searchTerm = "";
+    private string selectedCategory = "";
+
+    private IEnumerable<Event> filteredEvents => events
+        .Where(e => string.IsNullOrWhiteSpace(searchTerm) ||
+                    e.Title.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
+                    e.Description.Contains(searchTerm, StringComparison.OrdinalIgnoreCase))
+        .Where(e => string.IsNullOrWhiteSpace(selectedCategory) ||
+                    e.Category.ToString() == selectedCategory);
+
+    // protected override void OnInitialized()
+    // {
+    //     // In a real application, you would get this data from a service
+    //     events = EventService.GetAllEventsAsync().Result;
+    //     if (!string.IsNullOrEmpty(Category) && Enum.TryParse<EventCategory>(Category, out var categoryEnum))
+    //     {
+    //         selectedCategory = categoryEnum.ToString();
+    //     }
+    // }
+    protected override void OnParametersSet()
+    {
+        // Load events if not already loaded
+        if (!events.Any())
+        {
+            events = EventService.GetAllEventsAsync().Result;
+        }
+
+        // Update selectedCategory when Category parameter changes
+        if (!string.IsNullOrEmpty(Category) && Enum.TryParse<EventCategory>(Category, out var categoryEnum))
+        {
+            selectedCategory = categoryEnum.ToString();
+        }
+        else
+        {
+            selectedCategory = "";
+        }
+    }
+    private void CategoryChanged(ChangeEventArgs e)
+    {
+        string newCategory = e.Value.ToString();
+        if (string.IsNullOrEmpty(newCategory))
+        {
+            Navigation.NavigateTo("/events");
+        }
+        else
+        {
+            Navigation.NavigateTo($"/events/{newCategory}");
+        }
+    }
+
+    private void NavigateToEventDetails(int eventId)
+    {
+        // In a real application, you would navigate to a details page
+        Navigation.NavigateTo($"/events/{eventId}");
+        // Navigation.NavigateTo($"/events/{eventId}");
+    }
+}

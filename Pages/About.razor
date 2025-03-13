@@ -1,0 +1,78 @@
+﻿@page "/about"
+@inject NavigationManager NavigationManager
+
+<PageTitle>About EventEasePK</PageTitle>
+
+<div class="about-hero">
+    <div class="container py-5">
+        <h1 class="display-4 fw-bold text-center mb-4">About EventEasePK</h1>
+    </div>
+</div>
+
+<div class="container my-5">
+    <div class="row">
+        <div class="col-md-8 mx-auto">
+            <div class="card shadow-sm">
+                <div class="card-body p-5">
+                    <h2 class="mb-4">Learning Blazor</h2>
+                    <p class="lead">
+                        EventEasePK is a project created to enhance my frontend development skills using Blazor. This platform serves as a practical learning tool to explore the capabilities of Blazor and WebAssembly.
+                    </p>
+                    <p>
+                        Blazor is a powerful framework for building interactive web applications using C# and .NET. By leveraging WebAssembly, Blazor allows developers to run .NET code directly in the browser, providing a seamless and high-performance user experience. Through this project, I aim to gain hands-on experience with Blazor's component-based architecture, data binding, and state management.
+                    </p>
+
+                    <hr class="my-5">
+
+                    <h2 class="mb-4">Purpose of This Site</h2>
+                    <div class="row g-4 mb-5">
+                        <div class="col-md-4">
+                            <div class="text-center">
+                                <i class="bi bi-search fs-1 text-primary mb-3"></i>
+                                <h5>Event Discovery</h5>
+                                <p class="text-muted">Users can find events based on their interests, location, and schedule.</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="text-center">
+                                <i class="bi bi-ticket-perforated fs-1 text-primary mb-3"></i>
+                                <h5>Ticket Booking</h5>
+                                <p class="text-muted">Book tickets easily with secure payment options.</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="text-center">
+                                <i class="bi bi-calendar-check fs-1 text-primary mb-3"></i>
+                                <h5>Event Management</h5>
+                                <p class="text-muted">Organizers can create, manage, and promote their own events.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h2 class="mb-4">About This Project</h2>
+                    <p>
+                        This project was started in 2025 as a way to dive deeper into Blazor and WebAssembly. The goal is to build a functional event management platform while learning and applying new frontend development techniques.
+                    </p>
+                    <p>
+                        EventEasePK is designed to be a comprehensive platform for both event attendees and organizers. Users can browse a wide range of events, from conferences and workshops to concerts and exhibitions. The platform provides detailed event information, including dates, locations, prices, and available tickets.
+                    </p>
+                    <p>
+                        For event organizers, EventEasePK offers powerful tools to create and manage events. Organizers can set up event details, track ticket sales, and communicate with attendees. The platform also includes features for promoting events through social media integration and email marketing.
+                    </p>
+                    <p>
+                        Throughout the development of EventEasePK, I have focused on creating a user-friendly interface and ensuring a smooth user experience. The project has allowed me to explore various aspects of Blazor, including component design, form validation, and state management. Additionally, I have gained experience in integrating third-party services and APIs to enhance the functionality of the platform.
+                    </p>
+                    <p>
+                        As I continue to develop EventEasePK, I plan to add more advanced features, such as real-time updates, analytics, and support for multiple languages. My ultimate goal is to create a robust and scalable event management solution that can be used by individuals and organizations worldwide.
+                    </p>
+
+                    <div class="text-center mt-5">
+                        <button class="btn btn-primary btn-lg px-4" @onclick="@(() => NavigationManager.NavigateTo("/"))">
+                            <i class="bi bi-arrow-left me-2"></i> Back to Home
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
